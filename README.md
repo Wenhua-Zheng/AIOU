@@ -66,8 +66,8 @@ Before training, we need to implant the IoU code into the YOLOv7. Make the follo
 #     return iou  # IoU
 
 # ['based', 'monotonous', 'non_monotonous', 'adaptive']
-self = IoU_Cal(b1, b2, anchors, psobj, iou_focal_loss='based', conf_focal_loss='based')
-loss = getattr(IoU_Cal, type_)(b1, b2, anchors, psobj, self=self)
+self = IoU_Cal(b1, b2, anchors, psobj, t_cls, iou_focal_loss='based', conf_focal_loss='based')
+loss = getattr(IoU_Cal, type_)(b1, b2, anchors, psobj, t_cls, self=self)
 iou = 1 - self.iou
 
 return loss, iou
@@ -80,7 +80,10 @@ return loss, iou
 ``` shell
 # iou = bbox_iou(pbox.T, tbox[i], x1y1x2y2=False, CIoU=True)
 
-loss, iou = bbox_iou(pbox.T, tbox[i], anchors[i], psobj, x1y1x2y2=False, type_=self.iou_type)
+selected_tcls = targets[i][:, 1].long()
+t = torch.full_like(ps[:, 5:], self.cn, device=device)  # targets
+t[range(n), selected_tcls] = self.cp
+loss, iou = bbox_iou(pbox.T, tbox[i], anchors[i], psobj, t, type_=self.iou_type, x1y1x2y2=False)
 ```
 
 3. Place iou.py under./utils
