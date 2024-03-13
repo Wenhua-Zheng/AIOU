@@ -80,15 +80,15 @@ class IoU_Cal:
         cls.conf_mean_total = cls.conf_mean_total.to(self.pred.device)
 
         if self.pred.requires_grad:
-            cls.iou_mean = (1 - cls.momentum) * cls.iou_mean + cls.momentum * (
+            cls.iou_mean = torch.min(1 - self.t_cls * cls.momentum, dim=0)[0] * cls.iou_mean + cls.momentum * (
                     (self.iou.reshape(-1, 1).detach() * self.t_cls).sum(dim=0) / (self.t_cls.sum(dim=0) + 0.01))
-            cls.iou_mean_total = (
-                                         1 - cls.momentum) * cls.iou_mean_total + cls.momentum * self.iou.detach().mean().item()
+            cls.iou_mean_total = (1 - cls.momentum) * cls.iou_mean_total + \
+                                 cls.momentum * self.iou.detach().mean().item()
 
-            cls.conf_mean = (1 - cls.momentum) * cls.conf_mean + cls.momentum * (
+            cls.conf_mean = torch.min(1 - self.t_cls * cls.momentum, dim=0)[0] * cls.conf_mean + cls.momentum * (
                     (self.conf.reshape(-1, 1).detach() * self.t_cls).sum(dim=0) / (self.t_cls.sum(dim=0) + 0.01))
-            cls.conf_mean_total = (
-                                          1 - cls.momentum) * cls.conf_mean_total + cls.momentum * self.conf.detach().mean().item()
+            cls.conf_mean_total = (1 - cls.momentum) * cls.conf_mean_total + \
+                                  cls.momentum * self.conf.detach().mean().item()
         else:
             self.iou_focal_type, self.conf_focal_type = 'based', 'based'
 
