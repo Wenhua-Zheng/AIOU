@@ -4,9 +4,9 @@ gt=to_tblr(B);
 Ibox=In(pred,gt);
 I=(Ibox.b-Ibox.t)*(Ibox.r-Ibox.l);
 Cbox=cover(pred,gt);
-C=(Cbox.b-Cbox.t)*(Cbox.b-Cbox.t)+(Cbox.r-Cbox.l)*(Cbox.r-Cbox.l); % box的h、w 平方和
-CCw=Cbox.r-Cbox.l; % box的W
-CCh=Cbox.b-Cbox.t; % box的H
+C=(Cbox.b-Cbox.t)*(Cbox.b-Cbox.t)+(Cbox.r-Cbox.l)*(Cbox.r-Cbox.l); % The sum of the squares of the height and width of a box
+CCw=Cbox.r-Cbox.l; % The width of the box
+CCh=Cbox.b-Cbox.t; % The hight of the box
 if pred.t<gt.t
     Ct.dx=0;
     Ct.dy=1;
@@ -54,24 +54,24 @@ else
     Cr.dw=0;
     Cr.dh=0;
 end
-Cw.dx=Cr.dx-Cl.dx;  % x方向梯度
-Cw.dy=Cb.dy-Ct.dy;  % y方向梯度
-Cw.dw=Cr.dw-Cl.dw;  % w方向梯度
-Cw.dh=Cb.dh-Ct.dh;  % h方向梯度
+Cw.dx=Cr.dx-Cl.dx;    % Gradient of x
+Cw.dy=Cb.dy-Ct.dy;    % Gradient of y
+Cw.dw=Cr.dw-Cl.dw;    % Gradient of w
+Cw.dh=Cb.dh-Ct.dh;    % Gradient of h
 Ch.dx=Cr.dx-Cl.dx;
 Ch.dy=Cb.dy-Ct.dy;
 Ch.dw=Cr.dw-Cl.dw;
 Ch.dh=Cb.dh-Ct.dh;
-% 左右两侧：pred在gt外围时，则梯度为负值
+% When pred is on the periphery of gt, the gradient is the opposite number
 if pred.l<gt.l&&pred.r>gt.r
     Cw.dw=-1;
 end
-% 上下两侧：pred在gt外围时，则梯度为负值
+% When pred is on the periphery of gt, the gradient is the opposite number
 if pred.t<gt.t&&pred.b>gt.b
     Ch.dh=-1;
 end
 
-d=(A(1)-B(1))*(A(1)-B(1))+(A(2)-B(2))*(A(2)-B(2));  % x and y of distance的平方和 
+d=(A(1)-B(1))*(A(1)-B(1))+(A(2)-B(2))*(A(2)-B(2));  % The sum of the squared distances of x and y
 d_loss=exp(d/C);
 s.dx = -1*d_loss*(2*(A(1)-B(1))/C)*d_loss;
 s.dy = -1*d_loss*(2*(A(2)-B(2))/C)*d_loss;
@@ -81,7 +81,7 @@ s.dh = 0;
 %s.dh = -1*d_loss*(-2)*CCh*Ch.dh*d/(C*C);
 
 %{
-d=(A(1)-B(1))*(A(1)-B(1))+(A(2)-B(2))*(A(2)-B(2));  % x and y of distance的平方和 
+d=(A(1)-B(1))*(A(1)-B(1))+(A(2)-B(2))*(A(2)-B(2));  % % The sum of the squared distances of x and y
 s.dx=1*(2*(B(1)-A(1))*C-(2*CCw*Cw.dx+2*CCh*Ch.dx)*d) / (C * C);
 s.dy=1*(2*(B(2)-A(2))*C-(2*CCw*Cw.dy+2*CCh*Ch.dy)*d) / (C * C);
 s.dw= 1*(2*CCw*Cw.dw+2*CCh*Ch.dw)*d / (C * C);

@@ -8,7 +8,7 @@ s.dt=0;
 s.db=0;
 s.dl=0;
 s.dr=0;
-% 防止inter为空，使用最小二乘法
+%Prevent intersection from being empty
 if Ibox.t<Ibox.b&&Ibox.l<Ibox.r&&U>0
     s.dt=(U*dI.dt-I*dU.dt)/U^2;
     s.db=(U*dI.db-I*dU.db)/U^2;
